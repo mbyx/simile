@@ -10,7 +10,7 @@ An 8x8 matrix animation display and control software.
 To run the control software:
 ```bash
 $ pip install pyserial streamlit pillow
-$ python3 -m streamlit.py
+$ python3 -m streamlit run src/simile.py
 ```
 
 ### Connections
