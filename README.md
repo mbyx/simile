@@ -21,3 +21,5 @@ Upload the code to the ESP32 and make the following connections:
 - CS to Pin 5
 
 ### Preview
+![](https://github.com/mbyx/simile/blob/main/App.gif)
+![](https://github.com/mbyx/simile/blob/main/Hardware.gif)
