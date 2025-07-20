@@ -1,15 +1,12 @@
+import json
+import subprocess
+import sys
 import time
 
 import serial
 import serial.tools.list_ports
 import streamlit as st
 from PIL import Image
-
-if "animations" not in st.session_state:
-    st.session_state.animations = {}
-
-if "serial_connection" not in st.session_state:
-    st.session_state.serial_connection = None
 
 
 def find_esp32_port():
@@ -129,8 +126,14 @@ def upload_animations() -> None:
         if not send_to_board(animation_line):
             return
 
+    save_animations_to_disk()
     send_to_board("PLAY_ALL\n")
     st.success("Animations uploaded successfully!")
+
+
+def save_animations_to_disk() -> None:
+    with open("animations.json", "w") as f:
+        json.dump(st.session_state.animations, f)
 
 
 def play_specific_animation(name: str) -> None:
@@ -143,6 +146,20 @@ def clear_board() -> None:
     """Clear all animations from the board"""
     if send_to_board("CLEAR\n"):
         st.success("Board cleared!")
+
+
+if "serial_connection" not in st.session_state:
+    st.session_state.serial_connection = None
+
+
+if "animations" not in st.session_state:
+    try:
+        with open("animations.json", "r") as f:
+            st.session_state.animations = json.load(f)
+        get_serial_connection()
+        upload_animations()
+    except FileNotFoundError:
+        st.session_state.animations = {}
 
 
 st.title("Matrix Animator")
@@ -264,7 +281,7 @@ for i, (anim_name, data) in enumerate(st.session_state.animations.items()):
                             key=f"duration_{anim_name}_{sprite.name}",
                             min_value=0.1,
                             max_value=10.0,
-                            step=0.1,
+                            step=0.001,
                             format="%.1f",
                         )
                         data["duration"].append(duration)
